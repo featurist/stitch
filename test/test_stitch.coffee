@@ -7,6 +7,7 @@ fixtures     = fixtureRoot + "/default"
 altFixtures  = fixtureRoot + "/alternate"
 addlFixtures = fixtureRoot + "/additional"
 ecoFixtures  = fixtureRoot + "/eco"
+pogoFixtures = fixtureRoot + "/pogo"
 linkFixtures = fixtureRoot + "/link"
 fixtureCount = 17
 
@@ -28,6 +29,11 @@ ecoOptions =
   identifier: "testRequire"
   paths:      [ecoFixtures]
 ecoPackage = stitch.createPackage ecoOptions
+
+pogoOptions =
+  identifier: "testRequire"
+  paths:      [pogoFixtures]
+pogoPackage = stitch.createPackage pogoOptions
 
 dependencyOptions =
   identifier:   "testRequire"
@@ -315,5 +321,15 @@ if stitch.compilers.eco
 
       html = testRequire("hello.html")(name: "Sam").trim()
       test.same "hello Sam!", html.split("\n").pop()
+      test.done()
+
+if stitch.compilers.pogo
+  module.exports["pogo compiler"] = (test) ->
+    test.expect 2
+    pogoPackage.compile (err, sources) ->
+      test.ok !err
+      testRequire = load sources
+      hello = testRequire("hello").sayHelloTo "pogo"
+      test.same "Hello, pogo", hello
       test.done()
 
